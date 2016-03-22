@@ -1,9 +1,9 @@
 ---
 tasks:
-- id: 1
-  title: Pizza
-  description: 'main toppings: tomatoes, cheese, basil'
 - id: 2
   title: Bruchetta
   description: crunchy white baguette as base topped with tomatoes, cheese, basil
-total: 2
+- id: 3
+  title: Sushi
+  description: rice, fish, tamari, pickled ginger, soy sauce
+total: 4
