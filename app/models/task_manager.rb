@@ -1,5 +1,4 @@
 require 'yaml/store'
-require_relative 'task'
 
 class TaskManager
   attr_reader :database
@@ -9,30 +8,11 @@ class TaskManager
   end
 
   def create(task)
-    database.transaction do
-      database['tasks'] ||= []
-      database['total'] ||= 0
-      database['total'] += 1
-      database['tasks'] << { "id" => database['total'], "title" => task[:title], "description" => task[:description] }
-    end
-  end
-
-  def raw_tasks
-    database.transaction do
-      database['tasks'] || []
-    end
-  end
-
-  def update(id, task)
-    database.transaction do
-      target = database['tasks'].find { |data| data['id'] == id }
-      target['title'] = task[:title]
-      target['description'] = task[:description]
-    end
+    database.from(:tasks).insert(task)
   end
 
   def all
-    raw_tasks.map { |data| Task.new(data) }
+    database.from(:tasks).map { |data| Task.new(data) }
   end
 
   def raw_task(id)
@@ -40,12 +20,19 @@ class TaskManager
   end
 
   def find(id)
-    Task.new(raw_task(id))
+    raw_task = database.from(:tasks).where(:id => id)
+    Task.new(raw_task)
   end
 
-  def delete(id)
-    database.transaction do
-      database['tasks'].delete_if { |task| task['id'] == id }
-    end
+  def update(id, task)
+    database.from(:tasks).where(:id => id).update(task)
+  end
+
+  def destroy(id)
+    database.from(:tasks).where(:id => id).delete
+  end
+
+  def delete_all
+    database.from(:tasks).delete
   end
 end
